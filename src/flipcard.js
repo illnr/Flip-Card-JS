@@ -22,7 +22,3 @@ function addBasicCss(options) {
             container.style.backgroundColor = 'red';
         }
 }
-
-function test() {
-    console.log("test");
-}
