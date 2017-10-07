@@ -1,3 +1,3 @@
 import FlipCard from '../src/flipcard.js';
 
-let fc = new FlipCard({addBasicCss: true});
+let fc = new FlipCard({addCssPositioning: true});
