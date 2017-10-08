@@ -1,4 +1,13 @@
 /**
+ * https://
+ * Flip Card JS
+ * @version 0.0.1
+ * @author Fabian Wiesner
+ * @copyright ⓒ2017 Fabian Wiesner
+ * Released under the MIT licence
+ */
+
+/**
  *
  * @type {{container: string, front: string, back: string, addCssBasic: boolean}}
  */
@@ -32,7 +41,6 @@ export default class FlipCard {
         if (this.options.addCssPositioning) {
             _addCssPositioning(this.options);
         }
-        console.log(this.options);
     }
 
     /**
@@ -65,17 +73,23 @@ export default class FlipCard {
 /**
  *
  * @param options
+ * @private
  */
 function _addCssBasic(options) {
     for (const card of options.domObjects.cardList) {
         card.container.style.perspective = "400px";
         card.front.style.backfaceVisibility = "hidden";
         card.back.style.backfaceVisibility = "hidden";
-        card.front.style.transform.rotate(0);
-        card.back.style.transform.rotate(180);
+        _updateTransformProperty(card.front, "rotateY(0)");
+        _updateTransformProperty(card.back, "rotateY(180deg)");
     }
 }
 
+/**
+ *
+ * @param options
+ * @private
+ */
 function _addCssPositioning(options) {
     for (const card of options.domObjects.cardList) {
         // Set container relative
@@ -92,10 +106,49 @@ function _addCssPositioning(options) {
         card.front.style.position = "absolute";
         card.front.style.top = "50%";
         card.front.style.left = "50%";
-        card.front.style.transform = "translate(-50%, -50%)";
+        _updateTransformProperty(card.front, "translate(-50%, -50%)");
         card.back.style.position = "absolute";
         card.back.style.top = "50%";
         card.back.style.left = "50%";
-        card.back.style.transform = "translate(-50%, -50%)";
+        _updateTransformProperty(card.back, "translate(-50%, -50%)");
     }
+}
+
+/**
+ * Updates the transform property of an element, preserving all other properties.
+ * Can apply multiple transforms at once, but careful with matrix and matrix3d!
+ * ToDo: matrix + matrix3d case
+ * example:
+ *     _updateTransformProperty(card.back, "rotateY(50deg) skewX(20deg");
+ * @param {Element} element the element to update the transform style
+ * @param {String} values the value to update the transform style to
+ * @return {boolean}
+ * @private
+ */
+function _updateTransformProperty(element, values) {
+    let previousVals = {};
+    if (element.style.transform) {
+        previousVals = element.style.transform.trim()
+            .match(/.+?\(.+?\)/g) // matches a word followed by '(' [...] ')'
+            .map(val => val.trim()
+                .split(/[()]+/).filter(el => el) // split ([...]) example: ("translate(-50%, -50%)".split(/[()]+/).filter(el => el));
+            )
+            .reduce((acc, cur) => {acc[cur[0]] = cur[1]; return acc}, {}) // make dict of it: {tranform-func: val}
+        ;
+    }
+    let nextVals = values.trim()
+        .match(/.+?\(.+?\)/g) // matches a word followed by '(' [...] ')'
+        .map(val => val.trim()
+            .split(/[()]+/).filter(el => el) // split ([...]) example: ("translate(-50%, -50%)".split(/[()]+/).filter(el => el));
+        )
+        .reduce((acc, cur) => {acc[cur[0]] = cur[1]; return acc}, {}) // make dict of it: {tranform-func: val}
+    ;
+    let updatedVals = Object.assign({}, previousVals, nextVals);
+    let updatedValsString = ``;
+    for (const key of Object.keys(updatedVals)) {
+        updatedValsString += `${key}(${updatedVals[key]}) `;
+    }
+    updatedValsString.slice(0,-1);
+    element.style.transform = updatedValsString;
+    return true;
 }

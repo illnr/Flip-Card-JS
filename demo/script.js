@@ -1,3 +1,5 @@
 import FlipCard from '../src/flipcard.js';
 
-let fc = new FlipCard({addCssPositioning: true});
+document.addEventListener("DOMContentLoaded", function(event) {
+    let fc = new FlipCard({addCssPositioning: true});
+});
