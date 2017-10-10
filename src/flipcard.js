@@ -7,6 +7,10 @@
  * Released under the MIT licence
  */
 
+import {TouchSupport} from './touch-support.js';
+import {Card} from "./card.js";
+import {Helper} from "./helper.js";
+
 /**
  *
  * @type {{container: string, front: string, back: string, addCssBasic: boolean}}
@@ -18,14 +22,29 @@ const defaults = {
     addCssBasic: true,
     addCssPositioning: false,
     domObjects: {
-        cardList: [
-            {
-                container: null,
-                front: null,
-                back: null
-            },
-        ]
+        cardList: []
     },
+};
+
+
+const _constants = {
+    // passive option, see:
+    // https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener#Safely_detecting_option_support
+    passiveEventOption: function(){
+        let passiveSupported = false;
+        try {
+            let options = Object.defineProperty({}, "passive", {
+                get: function() {
+                    passiveSupported = true;
+                }
+            });
+
+            window.addEventListener("test", null, options);
+            return passiveSupported ? { passive: true } : false;
+        } catch(err) {
+            return false;
+        }
+    }()
 };
 
 /**
@@ -41,6 +60,7 @@ export default class FlipCard {
         if (this.options.addCssPositioning) {
             _addCssPositioning(this.options);
         }
+        this.touchSupport.add();
     }
 
     /**
@@ -48,25 +68,53 @@ export default class FlipCard {
      */
     updateDomObjects() {
         // Check if there are already objects in list
-        if (this.options.domObjects.cardList[0].container === null) {
-            // Remove empty cardList element
-            this.options.domObjects.cardList.pop();
+        if (this.options.domObjects.cardList.length === 0) {
             // Iterate over all containers and add them
             let containerList = document.querySelectorAll(this.options.container);
             for (const container of containerList) {
                 const front = container.querySelector(this.options.front);
                 const back = container.querySelector(this.options.back);
 
-                this.options.domObjects.cardList.push({
-                    container: container,
-                    front: front,
-                    back: back
-                });
+                this.options.domObjects.cardList.push(new Card(container,front,back));
             }
         } else {
-            console.error("ToDo! updateDomObjects()"); // ToDo updateDomObjects - already have some
+            // ToDo updateDomObjects - already have some
+            console.error("ToDo! Not implemented yet, if there are already objects. updateDomObjects()");
         }
         return this;
+    }
+
+
+    get touchSupport() {
+        const _this = this;
+        return {
+            add() {
+                for (const card of _this.options.domObjects.cardList) {
+                    card.touchSupport = new TouchSupport();
+                    card.container.addEventListener('touchstart', (event) => card.touchSupport.touchstartHandler(event, card),
+                        _constants.passiveEventOption);
+                    card.container.addEventListener('touchmove', (event) => card.touchSupport.touchmoveHandler(event, card),
+                        _constants.passiveEventOption);
+                    card.container.addEventListener('touchend', (event) => card.touchSupport.touchendHandler(event, card),
+                        _constants.passiveEventOption);
+
+                    let i = 0;
+                    card.container.addEventListener('click', function a(e) {
+                        i+=2;
+                        if (i > 180) {
+                            i = -180;
+                            return;
+                        } else if (i === 0) {
+                            return;
+                        }
+                        Helper.updateTransformProperty(card.front, `rotateY(${i}deg)`);
+                        Helper.updateTransformProperty(card.back, `rotateY(${i+180}deg)`);
+                        window.requestAnimationFrame(a);
+                    }, _constants.passiveEventOption);
+                }
+                return _this;
+            }
+        }
     }
 }
 
@@ -80,8 +128,8 @@ function _addCssBasic(options) {
         card.container.style.perspective = "400px";
         card.front.style.backfaceVisibility = "hidden";
         card.back.style.backfaceVisibility = "hidden";
-        _updateTransformProperty(card.front, "rotateY(0)");
-        _updateTransformProperty(card.back, "rotateY(180deg)");
+        Helper.updateTransformProperty(card.front, "rotateY(0)");
+        Helper.updateTransformProperty(card.back, "rotateY(180deg)");
     }
 }
 
@@ -106,49 +154,12 @@ function _addCssPositioning(options) {
         card.front.style.position = "absolute";
         card.front.style.top = "50%";
         card.front.style.left = "50%";
-        _updateTransformProperty(card.front, "translate(-50%, -50%)");
+        card.front.style.transformOrigin = "left center";
+        Helper.updateTransformProperty(card.front, "translate(-50%, -50%)");
         card.back.style.position = "absolute";
         card.back.style.top = "50%";
         card.back.style.left = "50%";
-        _updateTransformProperty(card.back, "translate(-50%, -50%)");
+        card.back.style.transformOrigin = "left center";
+        Helper.updateTransformProperty(card.back, "translate(-50%, -50%)");
     }
-}
-
-/**
- * Updates the transform property of an element, preserving all other properties.
- * Can apply multiple transforms at once, but careful with matrix and matrix3d!
- * ToDo: matrix + matrix3d case
- * example:
- *     _updateTransformProperty(card.back, "rotateY(50deg) skewX(20deg");
- * @param {Element} element the element to update the transform style
- * @param {String} values the value to update the transform style to
- * @return {boolean}
- * @private
- */
-function _updateTransformProperty(element, values) {
-    let previousVals = {};
-    if (element.style.transform) {
-        previousVals = element.style.transform.trim()
-            .match(/.+?\(.+?\)/g) // matches a word followed by '(' [...] ')'
-            .map(val => val.trim()
-                .split(/[()]+/).filter(el => el) // split ([...]) example: ("translate(-50%, -50%)".split(/[()]+/).filter(el => el));
-            )
-            .reduce((acc, cur) => {acc[cur[0]] = cur[1]; return acc}, {}) // make dict of it: {tranform-func: val}
-        ;
-    }
-    let nextVals = values.trim()
-        .match(/.+?\(.+?\)/g) // matches a word followed by '(' [...] ')'
-        .map(val => val.trim()
-            .split(/[()]+/).filter(el => el) // split ([...]) example: ("translate(-50%, -50%)".split(/[()]+/).filter(el => el));
-        )
-        .reduce((acc, cur) => {acc[cur[0]] = cur[1]; return acc}, {}) // make dict of it: {tranform-func: val}
-    ;
-    let updatedVals = Object.assign({}, previousVals, nextVals);
-    let updatedValsString = ``;
-    for (const key of Object.keys(updatedVals)) {
-        updatedValsString += `${key}(${updatedVals[key]}) `;
-    }
-    updatedValsString.slice(0,-1);
-    element.style.transform = updatedValsString;
-    return true;
 }
