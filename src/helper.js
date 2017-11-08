@@ -1,6 +1,15 @@
 export class Helper {
+    /**
+     * Updates the transform property of an element, preserving all other properties.
+     * Can apply multiple transforms at once, but not use multiple with matrix and matrix3d! Not working yet!
+     * example:
+     *     updateTransformProperty(card.back, "rotateY(50deg) skewX(20deg");
+     * @param {Element} element the element to update the transform style
+     * @param {String} values the value to update the transform style to
+     * @return {boolean}
+     */
     static updateTransformProperty(element, values) {
-        _updateTransformProperty(element, values);
+        return _updateTransformProperty(element, values);
     }
 }
 

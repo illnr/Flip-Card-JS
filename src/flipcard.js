@@ -7,7 +7,7 @@
  * Released under the MIT licence
  */
 
-import {TouchSupport} from './touch-support.js';
+import {CardTouchSupport} from './card-touch-support.js';
 import {Card} from "./card.js";
 import {Helper} from "./helper.js";
 
@@ -40,6 +40,7 @@ const _constants = {
             });
 
             window.addEventListener("test", null, options);
+            // console.log("One Time Only :) IIFE");
             return passiveSupported ? { passive: true } : false;
         } catch(err) {
             return false;
@@ -61,6 +62,7 @@ export default class FlipCard {
             _addCssPositioning(this.options);
         }
         this.touchSupport.add();
+        // setTimeout(() => this.touchSupport.remove(), 2000);
     }
 
     /**
@@ -90,12 +92,13 @@ export default class FlipCard {
         return {
             add() {
                 for (const card of _this.options.domObjects.cardList) {
-                    card.touchSupport = new TouchSupport(card);
-                    card.container.addEventListener('touchstart', (event) => card.touchSupport.touchstartHandler(event),
+                    if (card.touchSupport) continue; // ToDo Test
+                    card.touchSupport = new CardTouchSupport(card);
+                    card.container.addEventListener('touchstart', card.touchSupport.touchstartHandler,
                         _constants.passiveEventOption);
-                    card.container.addEventListener('touchmove', (event) => card.touchSupport.touchmoveHandler(event),
+                    card.container.addEventListener('touchmove', card.touchSupport.touchmoveHandler,
                         _constants.passiveEventOption);
-                    card.container.addEventListener('touchend', (event) => card.touchSupport.touchendHandler(event),
+                    card.container.addEventListener('touchend', card.touchSupport.touchendHandler,
                         _constants.passiveEventOption);
 
                     let i = 0;
@@ -111,6 +114,19 @@ export default class FlipCard {
                         Helper.updateTransformProperty(card.back, `rotateY(${i+180}deg)`);
                         window.requestAnimationFrame(a);
                     }, _constants.passiveEventOption);
+                }
+                return _this;
+            },
+            remove() {
+                for (const card of _this.options.domObjects.cardList) {
+                    if (!card.touchSupport) continue;  // ToDo Test
+                    card.container.removeEventListener('touchstart', card.touchSupport.touchstartHandler,
+                        _constants.passiveEventOption);
+                    card.container.removeEventListener('touchmove', card.touchSupport.touchmoveHandler,
+                        _constants.passiveEventOption);
+                    card.container.removeEventListener('touchend', card.touchSupport.touchendHandler,
+                        _constants.passiveEventOption);
+                    card.touchSupport = null;
                 }
                 return _this;
             }

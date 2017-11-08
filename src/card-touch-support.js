@@ -1,16 +1,22 @@
 import {Helper} from "./helper.js";
 
-export class TouchSupport {
+export class CardTouchSupport {
     constructor(card) {
         this.card = card;
-        this.xDown = null;
-        this.isMoving = false;
-        this.touchStartDeg = 0;
-        this.time = 0;
-        this.degGap = 0;
-        this.degStart = 0;
-        this.requestAnimationFrameID = 0;
-        this.i = 0;
+        this.animTime = 1000;   // time in milliseconds for elastic animation (returnToPlank())
+        this.xDown = false;     // point in x-direction of touchevent when touchstartHandler started
+        this.isMoving = false;  // touchmoveHandler is currently working
+        this.touchStartDeg = 0; // deg when touchstartHandler started
+        this.time = 0;          // starting time for elastic animation (returnToPlank())
+        this.degGap = 0;        // starting gap to endgoal for elastic animation (returnToPlank())
+        this.degStart = 0;      // starting card deg for elastic animation (returnToPlank())
+        this.requestAnimationFrameID = 0;   // current requestID of elastic animation (returnToPlank())
+
+        // function expression
+        // https://stackoverflow.com/questions/46014034/es6-removeeventlistener-from-arrow-function-oop
+        this.touchstartHandler = this.touchstartHandler.bind(this);
+        this.touchmoveHandler = this.touchmoveHandler.bind(this);
+        this.touchendHandler = this.touchendHandler.bind(this);
     }
 
     touchstartHandler(event) {
@@ -39,26 +45,32 @@ export class TouchSupport {
     touchendHandler(event) {
         if (!this.xDown) return;
         this.xDown = null;
-        this.time = performance.now();
-        this.degGap = (180 - this.card.deg) < 0 ? (360-this.card.deg) : (180-this.card.deg) ;
+        // calculate correct degGap
+        if (0 <= this.card.deg && this.card.deg < 90) {
+            this.degGap = -this.card.deg;
+        } else if (90 <= this.card.deg && this.card.deg < 180) {
+            this.degGap = 180 - this.card.deg;
+        } else if (180 <= this.card.deg && this.card.deg < 270) {
+            this.degGap = 180 - this.card.deg;
+        } else {
+            this.degGap = 360 - this.card.deg;
+        }
         this.degStart = this.card.deg;
+        this.time = performance.now();
         // Start animation
         this.requestAnimationFrameID = window.requestAnimationFrame((highResTimestamp) => this.returnToPlank(highResTimestamp));
     }
 
     returnToPlank(currentTime) {
-        // console.log(this.i);
-        if (this.i === 60) {
+        if ((currentTime - this.time) > this.animTime) { // if run more than animTime(1000ms) - stop
             this.degGap = 0;
             this.time = 0;
             this.degStart = 0;
             this.requestAnimationFrameID = 0;
-            this.i = 0;
             return;
         }
-        this.i++;
-        // const newDeg = _easeOutElastic(currentTime - this.time, 0, 180, 1000);
-        const newDeg = _easeOutElastic(currentTime - this.time, this.degStart, this.degGap, 1000);
+        // const newDeg = _easeOutElastic(currentTime - this.time, 0, 180, this.animTime);
+        const newDeg = _easeOutElastic(currentTime - this.time, this.degStart, this.degGap, this.animTime);
         // console.log(newDeg);
         // console.log(performance.now() - this.time);
         Helper.updateTransformProperty(this.card.front, `rotateY(${newDeg}deg)`);
