@@ -1,20 +1,28 @@
 import {Helper} from "./helper.js";
 
 export class TouchSupport {
-    constructor() {
+    constructor(card) {
+        this.card = card;
         this.xDown = null;
         this.isMoving = false;
         this.touchStartDeg = 0;
+        this.time = 0;
+        this.degGap = 0;
+        this.degStart = 0;
+        this.requestAnimationFrameID = 0;
+        this.i = 0;
     }
 
-    touchstartHandler(event, card) {
+    touchstartHandler(event) {
+        // Cancel current animation
+        this.requestAnimationFrameID && window.cancelAnimationFrame(this.requestAnimationFrameID);
         // Use evt.originalEvent.touches instead of evt.touches if you are working with JQuery.
         // https://stackoverflow.com/questions/2264072/detect-a-finger-swipe-through-javascript-on-the-iphone-and-android
         this.xDown = event.touches[0].clientX;
-        this.touchStartDeg = card.deg;
+        this.touchStartDeg = this.card.deg;
     }
 
-    touchmoveHandler(event, card) {
+    touchmoveHandler(event) {
         if (!this.xDown || this.isMoving) return;
         this.isMoving = true;
         // Use evt.originalEvent.touches instead of evt.touches if you are working with JQuery.
@@ -22,14 +30,42 @@ export class TouchSupport {
         const xMove = event.touches[0].clientX;
         const xDiff = xMove - this.xDown;
         const xNew = this.touchStartDeg + xDiff;
-        Helper.updateTransformProperty(card.front, `rotateY(${xNew}deg)`);
-        Helper.updateTransformProperty(card.back, `rotateY(${xNew+180}deg)`);
-        card.deg = xNew;
+        Helper.updateTransformProperty(this.card.front, `rotateY(${xNew}deg)`);
+        Helper.updateTransformProperty(this.card.back, `rotateY(${xNew+180}deg)`);
+        this.card.deg = xNew;
         this.isMoving = false;
     }
 
-    touchendHandler(event, card) {
+    touchendHandler(event) {
+        if (!this.xDown) return;
         this.xDown = null;
+        this.time = performance.now();
+        this.degGap = (180 - this.card.deg) < 0 ? (360-this.card.deg) : (180-this.card.deg) ;
+        this.degStart = this.card.deg;
+        // Start animation
+        this.requestAnimationFrameID = window.requestAnimationFrame((highResTimestamp) => this.returnToPlank(highResTimestamp));
+    }
+
+    returnToPlank(currentTime) {
+        // console.log(this.i);
+        if (this.i === 60) {
+            this.degGap = 0;
+            this.time = 0;
+            this.degStart = 0;
+            this.requestAnimationFrameID = 0;
+            this.i = 0;
+            return;
+        }
+        this.i++;
+        // const newDeg = _easeOutElastic(currentTime - this.time, 0, 180, 1000);
+        const newDeg = _easeOutElastic(currentTime - this.time, this.degStart, this.degGap, 1000);
+        // console.log(newDeg);
+        // console.log(performance.now() - this.time);
+        Helper.updateTransformProperty(this.card.front, `rotateY(${newDeg}deg)`);
+        Helper.updateTransformProperty(this.card.back, `rotateY(${newDeg+180}deg)`);
+        // console.log(card.front.style.transform);
+        this.card.deg = newDeg;
+        this.requestAnimationFrameID = window.requestAnimationFrame((highResTimestamp) => this.returnToPlank(highResTimestamp));
     }
 }
 
@@ -40,19 +76,18 @@ export class TouchSupport {
  * http://robertpenner.com/easing/
  * http://upshots.org/actionscript/jsas-understanding-easing
  * http://sol.gfxile.net/interpolation/
- * @param x
- * @param t current time
- * @param b begInnIng value
- * @param c change In value
- * @param d duration
+ * @param t current time (or position) of the tween. This can be seconds or frames, steps, seconds, ms, whatever – as long as the unit is the same as is used for the total time
+ * @param b beginning value of the property
+ * @param c change between the beginning and destination value of the property
+ * @param d duration / total time of the tween
  * @return {*}
  * @private
  */
-function _easeOutElastic(x, t, b, c, d) {
+function _easeOutElastic(t, b, c, d) {
     let s=1.70158;let p=0;let a=c;
     if (t==0) return b;  if ((t/=d)==1) return b+c;  if (!p) p=d*.3;
-    if (a < Math.abs(c)) { a=c; let s=p/4; }
-    else let s = p/(2*Math.PI) * Math.asin (c/a);
+    if (a < Math.abs(c)) { a=c; s=p/4; }
+    else s = p/(2*Math.PI) * Math.asin (c/a);
     return a*Math.pow(2,-10*t) * Math.sin( (t*d-s)*(2*Math.PI)/p ) + c + b;
 }
 /*

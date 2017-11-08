@@ -90,12 +90,12 @@ export default class FlipCard {
         return {
             add() {
                 for (const card of _this.options.domObjects.cardList) {
-                    card.touchSupport = new TouchSupport();
-                    card.container.addEventListener('touchstart', (event) => card.touchSupport.touchstartHandler(event, card),
+                    card.touchSupport = new TouchSupport(card);
+                    card.container.addEventListener('touchstart', (event) => card.touchSupport.touchstartHandler(event),
                         _constants.passiveEventOption);
-                    card.container.addEventListener('touchmove', (event) => card.touchSupport.touchmoveHandler(event, card),
+                    card.container.addEventListener('touchmove', (event) => card.touchSupport.touchmoveHandler(event),
                         _constants.passiveEventOption);
-                    card.container.addEventListener('touchend', (event) => card.touchSupport.touchendHandler(event, card),
+                    card.container.addEventListener('touchend', (event) => card.touchSupport.touchendHandler(event),
                         _constants.passiveEventOption);
 
                     let i = 0;
