@@ -1,7 +1,7 @@
 /**
  * https://
  * Flip Card JS
- * @version 0.0.1
+ * @version 0.0.2
  * @author Fabian Wiesner
  * @copyright ⓒ2017 Fabian Wiesner
  * Released under the MIT licence
@@ -11,8 +11,8 @@ import {Card} from "./card.js";
 import {Helper} from "./helper.js";
 
 /**
- *
- * @type {{container: string, front: string, back: string, addCssBasic: boolean}}
+ * Possible options for passing to FlipCard constructor.
+ * @type {{container: string, front: string, back: string, addCssBasic: boolean, addCssPositioning: boolean, addTouchSupport: boolean, addMouseSupport: boolean, domObjects: {cardList: Array}}}
  */
 const defaults = {
     container: ".flip-card",
@@ -29,7 +29,9 @@ const defaults = {
 
 
 /**
- *
+ * THE class all depends on :)
+ * You can pass options,
+ * @see defaults
  */
 export default class FlipCard {
     constructor(options = {}) {
@@ -37,13 +39,15 @@ export default class FlipCard {
         this.updateDomObjects();
         if (this.options.addCssBasic) _addCssBasic(this.options);
         if (this.options.addCssPositioning) _addCssPositioning(this.options);
+        // ToDo: On Orientation Change || On Window Width Change = new CSS Positioning
         if (this.options.addTouchSupport) this.touchSupport.add();
         if (this.options.addMouseSupport) this.mouseSupport.add();
         // setTimeout(() => this.touchSupport.remove(), 2000);
     }
 
     /**
-     *
+     * If Objects to manipulate change (container, front, back), call this.
+     * @return {FlipCard}
      */
     updateDomObjects() {
         // Check if there are already objects in list
@@ -64,6 +68,10 @@ export default class FlipCard {
     }
 
 
+    /**
+     * To enable touchSupport, you can call your FlipCard.touchSupport.add();
+     * @return functions to call
+     */
     get touchSupport() {
         const _this = this;
         return {
@@ -82,6 +90,10 @@ export default class FlipCard {
         }
     }
 
+    /**
+     * To enable mouseSupport, you can call your FlipCard.mouseSupport.add();
+     * @return functions to call
+     */
     get mouseSupport() {
         const _this = this;
         return {
@@ -102,7 +114,9 @@ export default class FlipCard {
 }
 
 /**
+ * Adds the minimal Basic CSS for the Flip Effect
  * @private
+ * @param options the options from FlipCard
  */
 function _addCssBasic(options) {
     for (const card of options.domObjects.cardList) {
@@ -115,7 +129,9 @@ function _addCssBasic(options) {
 }
 
 /**
+ * Adds some more CSS and tries to center both front and back in the container
  * @private
+ * @param options the options from FlipCard
  */
 function _addCssPositioning(options) {
     for (const card of options.domObjects.cardList) {
