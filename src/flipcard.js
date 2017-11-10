@@ -7,7 +7,6 @@
  * Released under the MIT licence
  */
 
-import {CardTouchSupport} from './card-touch-support.js';
 import {Card} from "./card.js";
 import {Helper} from "./helper.js";
 
@@ -21,32 +20,13 @@ const defaults = {
     back: ".flip-card-back",
     addCssBasic: true,
     addCssPositioning: false,
+    addTouchSupport: true,
+    addMouseSupport: true,
     domObjects: {
         cardList: []
     },
 };
 
-
-const _constants = {
-    // passive option, see:
-    // https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener#Safely_detecting_option_support
-    passiveEventOption: function(){
-        let passiveSupported = false;
-        try {
-            let options = Object.defineProperty({}, "passive", {
-                get: function() {
-                    passiveSupported = true;
-                }
-            });
-
-            window.addEventListener("test", null, options);
-            // console.log("One Time Only :) IIFE");
-            return passiveSupported ? { passive: true } : false;
-        } catch(err) {
-            return false;
-        }
-    }()
-};
 
 /**
  *
@@ -55,13 +35,10 @@ export default class FlipCard {
     constructor(options = {}) {
         this.options = Object.assign({}, defaults, options);
         this.updateDomObjects();
-        if (this.options.addCssBasic) {
-            _addCssBasic(this.options);
-        }
-        if (this.options.addCssPositioning) {
-            _addCssPositioning(this.options);
-        }
-        this.touchSupport.add();
+        if (this.options.addCssBasic) _addCssBasic(this.options);
+        if (this.options.addCssPositioning) _addCssPositioning(this.options);
+        if (this.options.addTouchSupport) this.touchSupport.add();
+        if (this.options.addMouseSupport) this.mouseSupport.add();
         // setTimeout(() => this.touchSupport.remove(), 2000);
     }
 
@@ -92,41 +69,31 @@ export default class FlipCard {
         return {
             add() {
                 for (const card of _this.options.domObjects.cardList) {
-                    if (card.touchSupport) continue; // ToDo Test
-                    card.touchSupport = new CardTouchSupport(card);
-                    card.container.addEventListener('touchstart', card.touchSupport.touchstartHandler,
-                        _constants.passiveEventOption);
-                    card.container.addEventListener('touchmove', card.touchSupport.touchmoveHandler,
-                        _constants.passiveEventOption);
-                    card.container.addEventListener('touchend', card.touchSupport.touchendHandler,
-                        _constants.passiveEventOption);
-
-                    let i = 0;
-                    card.container.addEventListener('click', function a(e) {
-                        i+=2;
-                        if (i > 180) {
-                            i = -180;
-                            return;
-                        } else if (i === 0) {
-                            return;
-                        }
-                        Helper.updateTransformProperty(card.front, `rotateY(${i}deg)`);
-                        Helper.updateTransformProperty(card.back, `rotateY(${i+180}deg)`);
-                        window.requestAnimationFrame(a);
-                    }, _constants.passiveEventOption);
+                    card.addTouchSupport();
                 }
                 return _this;
             },
             remove() {
                 for (const card of _this.options.domObjects.cardList) {
-                    if (!card.touchSupport) continue;  // ToDo Test
-                    card.container.removeEventListener('touchstart', card.touchSupport.touchstartHandler,
-                        _constants.passiveEventOption);
-                    card.container.removeEventListener('touchmove', card.touchSupport.touchmoveHandler,
-                        _constants.passiveEventOption);
-                    card.container.removeEventListener('touchend', card.touchSupport.touchendHandler,
-                        _constants.passiveEventOption);
-                    card.touchSupport = null;
+                    card.removeTouchSupport();
+                }
+                return _this;
+            }
+        }
+    }
+
+    get mouseSupport() {
+        const _this = this;
+        return {
+            add() {
+                for (const card of _this.options.domObjects.cardList) {
+                    card.addMouseSupport();
+                }
+                return _this;
+            },
+            remove() {
+                for (const card of _this.options.domObjects.cardList) {
+                    card.removeMouseSupport();
                 }
                 return _this;
             }
@@ -135,8 +102,6 @@ export default class FlipCard {
 }
 
 /**
- *
- * @param options
  * @private
  */
 function _addCssBasic(options) {
@@ -150,8 +115,6 @@ function _addCssBasic(options) {
 }
 
 /**
- *
- * @param options
  * @private
  */
 function _addCssPositioning(options) {

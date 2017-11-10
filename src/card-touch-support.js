@@ -1,16 +1,17 @@
 import {Helper} from "./helper.js";
+import {Easing} from "./easing.js";
 
 export class CardTouchSupport {
     constructor(card) {
         this.card = card;
-        this.animTime = 1000;   // time in milliseconds for elastic animation (returnToPlank())
+        this.animTime = 1000;   // time in milliseconds for elastic animation (animateReturnToPlank())
         this.xDown = false;     // point in x-direction of touchevent when touchstartHandler started
         this.isMoving = false;  // touchmoveHandler is currently working
         this.touchStartDeg = 0; // deg when touchstartHandler started
-        this.time = 0;          // starting time for elastic animation (returnToPlank())
-        this.degGap = 0;        // starting gap to endgoal for elastic animation (returnToPlank())
-        this.degStart = 0;      // starting card deg for elastic animation (returnToPlank())
-        this.requestAnimationFrameID = 0;   // current requestID of elastic animation (returnToPlank())
+        this.time = 0;          // starting time for elastic animation (animateReturnToPlank())
+        this.degGap = 0;        // starting gap to endgoal for elastic animation (animateReturnToPlank())
+        this.degStart = 0;      // starting card deg for elastic animation (animateReturnToPlank())
+        this.requestAnimationFrameID = 0;   // current requestID of elastic animation (animateReturnToPlank())
 
         // function expression
         // https://stackoverflow.com/questions/46014034/es6-removeeventlistener-from-arrow-function-oop
@@ -58,79 +59,24 @@ export class CardTouchSupport {
         this.degStart = this.card.deg;
         this.time = performance.now();
         // Start animation
-        this.requestAnimationFrameID = window.requestAnimationFrame((highResTimestamp) => this.returnToPlank(highResTimestamp));
+        this.requestAnimationFrameID = window.requestAnimationFrame((highResTimestamp) => this.animateReturnToPlank(highResTimestamp));
     }
 
-    returnToPlank(currentTime) {
+    animateReturnToPlank(currentTime) {
         if ((currentTime - this.time) > this.animTime) { // if run more than animTime(1000ms) - stop
-            this.degGap = 0;
+            // this.degGap = 0;
+            // this.degStart = 0;
             this.time = 0;
-            this.degStart = 0;
             this.requestAnimationFrameID = 0;
             return;
         }
-        // const newDeg = _easeOutElastic(currentTime - this.time, 0, 180, this.animTime);
-        const newDeg = _easeOutElastic(currentTime - this.time, this.degStart, this.degGap, this.animTime);
-        // console.log(newDeg);
-        // console.log(performance.now() - this.time);
+        // const newDeg = Easing.easeOutElastic(currentTime - this.time, 0, 180, this.animTime);
+        const newDeg = Easing.easeOutElastic(currentTime - this.time, this.degStart, this.degGap, this.animTime);
+
         Helper.updateTransformProperty(this.card.front, `rotateY(${newDeg}deg)`);
         Helper.updateTransformProperty(this.card.back, `rotateY(${newDeg+180}deg)`);
-        // console.log(card.front.style.transform);
+
         this.card.deg = newDeg;
-        this.requestAnimationFrameID = window.requestAnimationFrame((highResTimestamp) => this.returnToPlank(highResTimestamp));
+        this.requestAnimationFrameID = window.requestAnimationFrame((highResTimestamp) => this.animateReturnToPlank(highResTimestamp));
     }
 }
-
-
-/**
- * Easing function. Credits:
- * https://github.com/danro/jquery-easing/blob/master/jquery.easing.js
- * http://robertpenner.com/easing/
- * http://upshots.org/actionscript/jsas-understanding-easing
- * http://sol.gfxile.net/interpolation/
- * @param t current time (or position) of the tween. This can be seconds or frames, steps, seconds, ms, whatever – as long as the unit is the same as is used for the total time
- * @param b beginning value of the property
- * @param c change between the beginning and destination value of the property
- * @param d duration / total time of the tween
- * @return {*}
- * @private
- */
-function _easeOutElastic(t, b, c, d) {
-    let s=1.70158;let p=0;let a=c;
-    if (t==0) return b;  if ((t/=d)==1) return b+c;  if (!p) p=d*.3;
-    if (a < Math.abs(c)) { a=c; s=p/4; }
-    else s = p/(2*Math.PI) * Math.asin (c/a);
-    return a*Math.pow(2,-10*t) * Math.sin( (t*d-s)*(2*Math.PI)/p ) + c + b;
-}
-/*
- *
- * TERMS OF USE - EASING EQUATIONS
- *
- * Open source under the BSD License.
- *
- * Copyright © 2001 Robert Penner
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this list of
- * conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright notice, this list
- * of conditions and the following disclaimer in the documentation and/or other materials
- * provided with the distribution.
- *
- * Neither the name of the author nor the names of contributors may be used to endorse
- * or promote products derived from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
- *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- *  EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
- *  GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
- * AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- *  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
- * OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- */
