@@ -1,6 +1,7 @@
 # Flip Card JS
 
-Written in ES6 modules :)
+Written in ES6 modules :)  
+No Dependency, maybe conflict with jQuery, not tested yet.
 
 ## Usage
 
