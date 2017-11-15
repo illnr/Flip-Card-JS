@@ -1,0 +1,31 @@
+{
+  "name": "flip-card-js",
+  "version": "0.0.2",
+  "description": "A JS flip card effect for the browser, mobile and desktop.",
+  "main": "NONE",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "gulp"
+  },
+  "repository": {
+    "type": "git",
+    "url": "github"
+  },
+  "keywords": [
+    "flipcard",
+    "flip-card",
+    "flipcardjs",
+    "flip-card-js"
+  ],
+  "author": "Fabian Wiesner",
+  "license": "MIT",
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "gulp": "^3.9.1",
+    "gulp-babel": "^7.0.0",
+    "gulp-concat": "^2.6.1",
+    "gulp-sourcemaps": "^2.6.1",
+    "gulp-uglify": "^3.0.0"
+  }
+}
