@@ -27,6 +27,7 @@ export class CardTouchSupport {
         // https://stackoverflow.com/questions/2264072/detect-a-finger-swipe-through-javascript-on-the-iphone-and-android
         this.xDown = event.touches[0].clientX;
         this.touchStartDeg = this.card.deg;
+        /* ToDo: Bug if only click (tap) with finger it stops working */
     }
 
     touchmoveHandler(event) {
