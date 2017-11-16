@@ -2,6 +2,9 @@
 A small lib to create a nice flipping card effects, 
 that works mobile by paning, and on desktop by hover.
 
+Demo:  
+https://rawgit.com/iBaff/Flip-Card-JS/master/demo/main/index.html
+
 
 Written in ES6 modules :)  
 No Dependency, maybe conflict with jQuery, not tested yet.
