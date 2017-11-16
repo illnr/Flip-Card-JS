@@ -5,7 +5,7 @@ No Dependency, maybe conflict with jQuery, not tested yet.
 
 ## Usage
 
-### Modern Edge, Chrome and Safari
+### Modern (Edge, Chrome and Safari)
 > https://caniuse.com/#feat=es6-module
 
 Import your JS File via:

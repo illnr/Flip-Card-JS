@@ -1,6 +1,3 @@
-var FlipCard = (function () {
-'use strict';
-
 const _constants = {
     /**
      * passive option, see:
@@ -501,8 +498,6 @@ function _addCssPositioning(options) {
     }
 }
 
-return FlipCard;
+export default FlipCard;
 
-}());
-
-//# sourceMappingURL=flipcard.js.map
+//# sourceMappingURL=flipcard-es6module.js.map

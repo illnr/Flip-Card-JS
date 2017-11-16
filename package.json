@@ -29,5 +29,8 @@
     "gulp-uglify": "^3.0.0",
     "rollup-plugin-babel": "^3.0.2"
   },
-  "dependencies": {}
+  "dependencies": {
+    "gulp-rename": "^1.2.2",
+    "pump": "^1.0.3"
+  }
 }

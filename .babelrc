@@ -1,18 +1,12 @@
 {
   "presets": [
-    [
-      "env",
-      {
-        "modules": false,
-        "targets": {
-          "browsers": [
-            "last 2 versions",
-            "not IE < 11",
-            "not operamini all"
-          ]
-        }
-      }
-    ]
+    ["env", {
+      "targets": {
+        "browsers": ["last 2 versions", "> 0.5%", "IE 11"],
+        "uglify": true
+      },
+      "modules": false
+    }]
   ],
   "plugins": [
     "external-helpers"
