@@ -1,4 +1,7 @@
 # Flip Card JS
+A small lib to create a nice flipping card effects, 
+that works mobile by paning, and on desktop by hover.
+
 
 Written in ES6 modules :)  
 No Dependency, maybe conflict with jQuery, not tested yet.
