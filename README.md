@@ -8,14 +8,14 @@ No Dependency, maybe conflict with jQuery, not tested yet.
 ### Modern (Edge, Chrome and Safari)
 > https://caniuse.com/#feat=es6-module
 
-Import your JS File via:
+Import your JS File in your HTML via:
 ```javascript
 <script type="module" src="script.js"></script>
 ```
 
 In your JS File:
 ```javascript
-import FlipCard from 'flipcard.js';
+import FlipCard from 'flipcard-es6module.js';
  
 document.addEventListener("DOMContentLoaded", function(event) {
     let fc = new FlipCard({addCssPositioning: true});
@@ -23,7 +23,18 @@ document.addEventListener("DOMContentLoaded", function(event) {
 ```
 
 ### Old/current approach
-// ToDo
+Import your JS Files in your HTML via:
+```javascript
+<script src="flipcard.js"></script>
+<script src="script.js"></script>
+```
+
+In your JS File:
+```javascript
+document.addEventListener("DOMContentLoaded", function(event) {
+    let fc = new FlipCard({addCssPositioning: true});
+});
+```
 
 ### Start using
 ```javascript
