@@ -76,7 +76,8 @@ function _updateTransformProperty(element, values) {
         .map(val => val.trim()
             .split(/[()]+/).filter(el => el) // split ([...]) example: ("translate(-50%, -50%)".split(/[()]+/).filter(el => el));
         )
-        .reduce((acc, cur) => {acc[cur[0]] = cur[1]; return acc}, {});
+        .reduce((acc, cur) => {acc[cur[0]] = cur[1]; return acc}, {}) // make dict of it: {tranform-func: val}
+    ;
     let updatedVals = Object.assign({}, previousVals, nextVals);
     let updatedValsString = ``;
     for (const key of Object.keys(updatedVals)) {
