@@ -15,13 +15,15 @@ No Dependency, maybe conflict with jQuery, not tested yet.
 > https://caniuse.com/#feat=es6-module
 
 Import your JS File in your HTML via:
+
 ```javascript
 <script type="module" src="script.js"></script>
 ```
 
 In your JS File:
+
 ```javascript
-import FlipCard from 'flipcard-es6module.js';
+import FlipCard from 'flipcard-es6m.js';
  
 document.addEventListener("DOMContentLoaded", function(event) {
     let fc = new FlipCard({addCssPositioning: true});
@@ -30,12 +32,14 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
 ### Old/current approach
 Import your JS Files in your HTML via:
+
 ```javascript
 <script src="flipcard.js"></script>
 <script src="script.js"></script>
 ```
 
 In your JS File:
+
 ```javascript
 document.addEventListener("DOMContentLoaded", function(event) {
     let fc = new FlipCard({addCssPositioning: true});
@@ -58,7 +62,7 @@ A card consists of a (one) front and a (one) back, both within a container.
 First you need to create an instance of `FlipCard`.
 
 ```javascript
-var options = {};
+const options = {};
 let fc = new FlipCard(options);
 ```
 
@@ -66,7 +70,7 @@ let fc = new FlipCard(options);
 Default options are:
 
 ```javascript
-var options = {
+const options = {
   container: ".flip-card",
   front: ".flip-card-front",
   back: ".flip-card-back",

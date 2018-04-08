@@ -1,11 +1,11 @@
 let gulp = require("gulp");
-var sourcemaps = require("gulp-sourcemaps");
+let sourcemaps = require("gulp-sourcemaps");
 let uglify = require('gulp-uglify-es').default;
-var rollup = require('gulp-better-rollup');
-var babel = require('rollup-plugin-babel');
+let rollup = require('gulp-better-rollup');
+let babel = require('rollup-plugin-babel');
 let rename = require("gulp-rename");
-var pump = require('pump');
-var runSequence = require('run-sequence');
+let pump = require('pump');
+let runSequence = require('run-sequence');
 
 // .babelrc
 // https://sebastiandedeyne.com/posts/2017/whats-in-our-babelrc
