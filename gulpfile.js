@@ -5,13 +5,12 @@ let rollup = require('gulp-better-rollup');
 let babel = require('rollup-plugin-babel');
 let rename = require("gulp-rename");
 let pump = require('pump');
-let runSequence = require('run-sequence');
 
 // .babelrc
 // https://sebastiandedeyne.com/posts/2017/whats-in-our-babelrc
 
 // es6module
-gulp.task("es6m", function (cb) {
+function es6m(cb) {
     pump([
         gulp.src("src/flipcard.js"),
         sourcemaps.init(),
@@ -36,9 +35,10 @@ gulp.task("es6m", function (cb) {
         gulp.dest("dist")
     ],
     cb);
-});
+};
+exports.es6m = es6m;
 // es6module minified
-gulp.task("es6m.min", function (cb) {
+function es6m_min(cb) {
     pump([
             gulp.src("src/flipcard.js"),
             sourcemaps.init(),
@@ -63,9 +63,10 @@ gulp.task("es6m.min", function (cb) {
             gulp.dest("dist")
         ],
         cb);
-});
+};
+exports.es6m_min = es6m_min;
 
-gulp.task("old", function (cb) {
+function old(cb) {
     pump([
         gulp.src("src/flipcard.js"),
         sourcemaps.init(),
@@ -89,9 +90,10 @@ gulp.task("old", function (cb) {
         gulp.dest("dist")
     ],
     cb);
-});
+};
+exports.old = old;
 
-gulp.task("old.min", function (cb) {
+function old_min(cb) {
     pump([
         gulp.src("src/flipcard.js"),
         sourcemaps.init(),
@@ -116,10 +118,11 @@ gulp.task("old.min", function (cb) {
         gulp.dest("dist")
     ],
     cb);
-});
+};
+exports.old_min = old_min;
 
 // Normal (without module, but including class etc
-gulp.task("normal", function (cb) {
+function normal(cb) {
     pump([
         gulp.src("src/flipcard.js"),
         sourcemaps.init(),
@@ -138,10 +141,11 @@ gulp.task("normal", function (cb) {
         gulp.dest("dist")
     ],
     cb);
-});
+};
+exports.normal = normal;
 
 // Normal minified (without module, but including class etc
-gulp.task("normal.min", function (cb) {
+function normal_min(cb) {
     pump([
             gulp.src("src/flipcard.js"),
             sourcemaps.init(),
@@ -162,15 +166,7 @@ gulp.task("normal.min", function (cb) {
             gulp.dest("dist")
         ],
         cb);
-});
+};
+exports.normal_min = normal_min;
 
-gulp.task('default',  function(callback) {
-    runSequence(
-        'normal',
-        'normal.min',
-        'es6m',
-        'es6m.min',
-        'old',
-        'old.min',
-        callback);
-});
+exports.default = gulp.parallel(es6m, es6m_min, normal, normal_min, old, old_min);

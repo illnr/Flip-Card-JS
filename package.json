@@ -4,7 +4,6 @@
   "description": "A JS flip card effect for the browser, mobile and desktop.",
   "main": "NONE",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "build": "gulp"
   },
   "repository": {
@@ -22,17 +21,16 @@
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-plugin-external-helpers": "^6.22.0",
-    "babel-preset-env": "^1.6.1",
-    "gulp": "^3.9.1",
-    "gulp-better-rollup": "^3.1.0",
-    "gulp-sourcemaps": "^2.6.4",
-    "gulp-uglify": "^3.0.0",
-    "gulp-uglify-es": "^1.0.1",
-    "rollup-plugin-babel": "^3.0.3",
-    "run-sequence": "^2.2.1"
+    "babel-preset-env": "^1.7.0",
+    "gulp": "^4.0.0",
+    "gulp-better-rollup": "^4.0.1",
+    "gulp-rename": "^1.4.0",
+    "gulp-sourcemaps": "^2.6.5",
+    "gulp-uglify": "^3.0.2",
+    "gulp-uglify-es": "^1.0.4",
+    "pump": "^3.0.0",
+    "rollup": "^1.9.0",
+    "rollup-plugin-babel": "^3.0.7"
   },
-  "dependencies": {
-    "gulp-rename": "^1.2.2",
-    "pump": "^3.0.0"
-  }
+  "dependencies": {}
 }
