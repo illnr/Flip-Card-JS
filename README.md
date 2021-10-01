@@ -3,8 +3,8 @@ A small lib to create a nice flipping card effect,
 that works mobile by paning, and on desktop by hover.
 
 **Demo**:  
-https://ibaff.github.io/Flip-Card-JS/demo/main/  
-https://ibaff.github.io/Flip-Card-JS/demo/js-module/
+https://illnr.github.io/Flip-Card-JS/demo/main/  
+https://illnr.github.io/Flip-Card-JS/demo/js-module/
 
 
 Written in ES6 modules :)  
