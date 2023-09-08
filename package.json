@@ -29,7 +29,7 @@
     "gulp-uglify": "^3.0.2",
     "gulp-uglify-es": "^1.0.4",
     "pump": "^3.0.0",
-    "rollup": "^1.9.0",
+    "rollup": "^1.32.1",
     "rollup-plugin-babel": "^3.0.7"
   },
   "dependencies": {}
